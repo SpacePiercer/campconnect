@@ -1,0 +1,190 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Switch, Button, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export default function CreateHikeScreen() {
+  const [hikeName, setHikeName] = useState('');
+  const [location, setLocation] = useState('');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [participants, setParticipants] = useState('');
+  const [carNeeded, setCarNeeded] = useState(false);
+
+  // Function to handle form submission
+  const handleSubmit = async () => {
+    if (!hikeName || !location || !date) {
+      const msg = 'Please fill out all required fields (Hike Name, Location, and Date).';
+      Platform.OS === 'web' ? window.alert(msg) : Alert.alert('Error', msg);
+      return;
+    }
+  
+    const newHike = { hikeName, location, date, time, participants, carNeeded };
+  
+    try {
+      const existing = await AsyncStorage.getItem('hikes');
+      const hikes = existing ? JSON.parse(existing) : [];
+      hikes.push(newHike);
+      await AsyncStorage.setItem('hikes', JSON.stringify(hikes));
+    } catch (error) {
+      console.error('Error saving data to AsyncStorage', error);
+    }
+  
+    setHikeName('');
+    setLocation('');
+    setDate('');
+    setTime('');
+    setParticipants('');
+    setCarNeeded(false);
+    Alert.alert('Success', 'Your hike has been created!');
+  };  
+
+  // Retrieve data on screen load (optional)
+  useEffect(() => {
+    const debugStorage = async () => {
+      const keys = await AsyncStorage.getAllKeys();
+      const result = await AsyncStorage.multiGet(keys);
+      console.log("AsyncStorage contents:", result);
+    };
+    debugStorage();
+  }, []);
+
+  const handleLoadData = async () => {
+    console.log("handleLoadData called");
+    try {
+      const data = await AsyncStorage.getItem('hikeData');
+      if (data) {
+        const parsedData = JSON.parse(data);
+        setHikeName(parsedData.hikeName);
+        setLocation(parsedData.location);
+        setDate(parsedData.date);
+        setTime(parsedData.time);
+        setParticipants(parsedData.participants);
+        setCarNeeded(parsedData.carNeeded);
+        Alert.alert('Data Loaded', 'Hike data has been loaded successfully.');
+      } else {
+        Alert.alert('No Data', 'No hike data found in AsyncStorage.');
+      }
+    } catch (error) {
+      console.error('Error loading data from AsyncStorage', error);
+    }
+  };
+  
+  const handleLoadAllHikes = async () => {
+    try {
+      const data = await AsyncStorage.getItem('hikes');
+      if (data) {
+        const hikes = JSON.parse(data);
+        console.log('All hikes:', hikes);
+        Alert.alert('Hikes Loaded', `Loaded ${hikes.length} hikes!`);
+      } else {
+        Alert.alert('No Data', 'No hikes found in AsyncStorage.');
+      }
+    } catch (error) {
+      console.error('Error loading hikes from AsyncStorage', error);
+    }
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.label}>🏔️ Hike Name</Text>
+      <TextInput
+        style={styles.input}
+        value={hikeName}
+        onChangeText={setHikeName}
+        placeholder="Enter hike name"
+        placeholderTextColor="#ccc"
+      />
+
+      <Text style={styles.label}>📍 Location</Text>
+      <TextInput
+        style={styles.input}
+        value={location}
+        onChangeText={setLocation}
+        placeholder="Enter location"
+        placeholderTextColor="#ccc"
+      />
+
+      <Text style={styles.label}>📅 Date</Text>
+      <TextInput
+        style={styles.input}
+        value={date}
+        onChangeText={setDate}
+        placeholder="YYYY-MM-DD"
+        placeholderTextColor="#ccc"
+      />
+
+      <Text style={styles.label}>⏰ Time</Text>
+      <TextInput
+        style={styles.input}
+        value={time}
+        onChangeText={setTime}
+        placeholder="HH:MM"
+        placeholderTextColor="#ccc"
+      />
+
+      <Text style={styles.label}>👥 Number of Participants</Text>
+      <TextInput
+        style={styles.input}
+        value={participants}
+        onChangeText={setParticipants}
+        keyboardType="numeric"
+        placeholder="e.g., 5"
+        placeholderTextColor="#ccc"
+      />
+
+      <View style={styles.switchContainer}>
+        <Text style={styles.label}>🚗 Need Carpool?</Text>
+        <Switch
+          value={carNeeded}
+          onValueChange={setCarNeeded}
+          thumbColor={carNeeded ? '#4ade80' : '#ccc'}
+        />
+      </View>
+
+      <View style={styles.buttonWrapper}>
+        <Button title="Create Hike" onPress={handleSubmit} />
+      </View>
+
+      <View style={styles.buttonWrapper}>
+        <Button title="Load Hike Data" onPress={handleLoadData} />
+      </View>
+
+      <View style={styles.buttonWrapper}>
+        <Button title="Load All Hikes" onPress={handleLoadAllHikes} />
+      </View>
+
+
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    paddingBottom: 60,
+    backgroundColor: '#000',
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 4,
+    color: '#fff',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#444',
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 12,
+    color: '#fff',
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    justifyContent: 'space-between',
+  },
+
+  buttonWrapper: {
+    marginBottom: 12,
+  }
+});
