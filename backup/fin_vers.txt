@@ -1,0 +1,243 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Switch, Button, StyleSheet, ScrollView, Alert, Platform, FlatList } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Utility function to show platform-specific alerts
+export const showAlert = (title: string, message: string) => {
+  if (Platform.OS === 'web') {
+    window.alert(`${title}: ${message}`);
+  } else {
+    Alert.alert(title, message);
+  }
+};
+
+// Define the Hike type outside the component
+type Hike = {
+  hikeName: string;
+  location: string;
+  date: string;
+  time: string;
+  participants: string;
+  carNeeded: boolean;
+};
+
+export default function CreateHikeScreen() {
+  const [hikes, setHikes] = useState<Hike[]>([]);
+  const [hikeName, setHikeName] = useState('');
+  const [location, setLocation] = useState('');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [participants, setParticipants] = useState('');
+  const [carNeeded, setCarNeeded] = useState(false);
+
+  // Function to handle form submission
+  const handleSubmit = async () => {
+    if (!hikeName || !location || !date) {
+      const msg = 'Please fill out all required fields (Hike Name, Location, and Date).';
+      showAlert('Error', msg);  // Use the showAlert function here
+      return;
+    }
+  
+    const newHike = { hikeName, location, date, time, participants, carNeeded };
+  
+    try {
+      // Get existing data from AsyncStorage
+      const existingData = await AsyncStorage.getItem('hikeData');
+      console.log('Existing data:', existingData);  // Log the retrieved data
+  
+      // Parse the existing data (default to empty array if no data or invalid data)
+      const hikeList: Hike[] = existingData ? JSON.parse(existingData) : [];
+      
+      // Make sure hikeList is an array
+      if (!Array.isArray(hikeList)) {
+        console.error('Data in AsyncStorage is not an array:', hikeList);
+        throw new Error('Stored data is not an array');
+      }
+  
+      // Push the new hike to the list
+      hikeList.push(newHike);
+      
+      // Save the updated list back to AsyncStorage
+      await AsyncStorage.setItem('hikeData', JSON.stringify(hikeList));
+      
+      // Clear form fields
+      setHikeName('');
+      setLocation('');
+      setDate('');
+      setTime('');
+      setParticipants('');
+      setCarNeeded(false);
+      showAlert('Success', 'Your hike has been created!');  // Use showAlert for success
+    } catch (error) {
+      console.error('Error saving hike data:', error);
+    }
+  };
+
+  // Retrieve data on screen load (optional)
+  useEffect(() => {
+    const debugStorage = async () => {
+      const keys = await AsyncStorage.getAllKeys();
+      const result = await AsyncStorage.multiGet(keys);
+      console.log("AsyncStorage contents:", result);
+    };
+    debugStorage();
+  }, []);
+
+  const handleLoadLastHike = async () => {
+    console.log("handleLoadLastHike called");
+    try {
+      const data = await AsyncStorage.getItem('hikeData');
+      if (data) {
+        const parsedData = JSON.parse(data);
+        const lastHike = parsedData[parsedData.length - 1];
+        setHikeName(lastHike.hikeName);
+        setLocation(lastHike.location);
+        setDate(lastHike.date);
+        setTime(lastHike.time);
+        setParticipants(lastHike.participants);
+        setCarNeeded(lastHike.carNeeded);
+        Alert.alert('Data Loaded', 'Last hike data has been loaded successfully.');
+      } else {
+        Alert.alert('No Data', 'No hike data found in AsyncStorage.');
+      }
+    } catch (error) {
+      console.error('Error loading data from AsyncStorage', error);
+    }
+  };
+  
+  const handleLoadAllHikes = async () => {
+    try {
+      const data = await AsyncStorage.getItem('hikeData');
+      const parsed: Hike[] = data ? JSON.parse(data) : [];
+      setHikes(parsed);
+    } catch (error) {
+      console.error('Error loading hikes:', error);
+    }
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      {/* Input Fields and Buttons */}
+      {/* Create Hike Form */}
+      <Text style={styles.label}>🏔️ Hike Name</Text>
+      <TextInput
+        style={styles.input}
+        value={hikeName}
+        onChangeText={setHikeName}
+        placeholder="Enter hike name"
+        placeholderTextColor="#ccc"
+      />
+      <Text style={styles.label}>📍 Location</Text>
+      <TextInput
+        style={styles.input}
+        value={location}
+        onChangeText={setLocation}
+        placeholder="Enter location"
+        placeholderTextColor="#ccc"
+      />
+      <Text style={styles.label}>📅 Date</Text>
+      <TextInput
+        style={styles.input}
+        value={date}
+        onChangeText={setDate}
+        placeholder="YYYY-MM-DD"
+        placeholderTextColor="#ccc"
+      />
+      <Text style={styles.label}>⏰ Time</Text>
+      <TextInput
+        style={styles.input}
+        value={time}
+        onChangeText={setTime}
+        placeholder="HH:MM"
+        placeholderTextColor="#ccc"
+      />
+      <Text style={styles.label}>👥 Number of Participants</Text>
+      <TextInput
+        style={styles.input}
+        value={participants}
+        onChangeText={setParticipants}
+        keyboardType="numeric"
+        placeholder="e.g., 5"
+        placeholderTextColor="#ccc"
+      />
+      <View style={styles.switchContainer}>
+        <Text style={styles.label}>🚗 Need Carpool?</Text>
+        <Switch
+          value={carNeeded}
+          onValueChange={setCarNeeded}
+          thumbColor={carNeeded ? '#4ade80' : '#ccc'}
+        />
+      </View>
+
+      <View style={styles.buttonWrapper}>
+        <Button title="Create Hike" onPress={handleSubmit} />
+      </View>
+
+      <View style={styles.buttonWrapper}>
+        <Button title="Load Last Hike" onPress={handleLoadLastHike} />
+      </View>
+
+      <View style={styles.buttonWrapper}>
+        <Button title="Load All Hikes" onPress={handleLoadAllHikes} />
+      </View>
+
+      {hikes.length > 0 && (
+        <FlatList
+          data={hikes}
+          keyExtractor={(item, index) => item.hikeName + index}  // Use unique string
+          renderItem={({ item }) => (
+            <View style={styles.row}>
+              <Text style={styles.cell}>🏔️ Name: {item.hikeName}</Text>
+              <Text style={styles.cell}>📍 Location: {item.location}</Text>
+              <Text style={styles.cell}>📅 Date: {item.date}</Text>
+              <Text style={styles.cell}>⏰ Time: {item.time}</Text>
+              <Text style={styles.cell}>👥 Participants: {item.participants}</Text>
+              <Text style={styles.cell}>🚗 Car Needed: {item.carNeeded ? 'Yes' : 'No'}</Text>
+            </View>
+          )}
+        />
+      )}
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    paddingBottom: 60,
+    backgroundColor: '#000',
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 4,
+    color: '#fff',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#444',
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 12,
+    color: '#fff',
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    justifyContent: 'space-between',
+  },
+  buttonWrapper: {
+    marginBottom: 12,
+  },
+  row: {
+    marginBottom: 10,
+    padding: 10,
+    backgroundColor: '#222',
+    borderRadius: 6,
+  },
+  cell: {
+    color: '#fff',
+    fontSize: 14,
+  },
+});
+
