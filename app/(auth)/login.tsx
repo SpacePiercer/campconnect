@@ -13,7 +13,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       await auth().signInWithEmailAndPassword(email, password);
-      router.replace('/index');
+      router.replace('/');
     } catch (err: any) {
       setError(err.message);
     }

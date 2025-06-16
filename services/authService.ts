@@ -82,7 +82,7 @@ export async function isAuthenticated(): Promise<boolean> {
 export async function getCurrentUser() {
   const token = await AsyncStorage.getItem('userToken');
   const uid = await AsyncStorage.getItem('userUid');
-  const email = await AsyncStorage.getItem('userEmail');
+  const userId = await AsyncStorage.getItem('userId');   // ✅
   
-  return token ? { uid, email, token } : null;
+  return token ? { uid, userId, token } : null;
 }

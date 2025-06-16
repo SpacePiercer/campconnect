@@ -12,7 +12,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {
-  const [emailText, setEmailText] = useState('');
+  const [token, setToken] = useState('');
+  const [uid, setUid] = useState('');
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [lowerText, setLowerText] = useState('');
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -23,7 +26,7 @@ export default function ProfileScreen() {
     try {
       const storedEmail = await AsyncStorage.getItem('userEmail');
       const storedLower = await AsyncStorage.getItem('userLowerText');
-      if (storedEmail !== null) setEmailText(storedEmail);
+      if (storedEmail !== null) setEmail(storedEmail);
       if (storedLower !== null) setLowerText(storedLower);
     } catch (err) {
       console.error('Failed to load profile fields', err);
@@ -40,8 +43,10 @@ export default function ProfileScreen() {
   const handleSave = async () => {
     try {
       await AsyncStorage.multiSet([
-        ['userEmail', emailText],
-        ['userLowerText', lowerText],
+        ['userToken', token],       // optional for auth
+        ['userId', uid],            // 👈 use this everywhere
+        ['userEmail', email],
+        ['username', username]      // optional
       ]);
       Alert.alert('Profile saved!');
       setIsEditing(false);
@@ -73,7 +78,7 @@ export default function ProfileScreen() {
       {!isEditing ? (
         <>
           <Text style={styles.label}>Email Display</Text>
-          <Text style={styles.textValue}>{emailText}</Text>
+          <Text style={styles.textValue}>{email}</Text>
           <Text style={styles.label}>Lower Text</Text>
           <Text style={styles.textValue}>{lowerText}</Text>
         </>
@@ -84,8 +89,8 @@ export default function ProfileScreen() {
             style={styles.input}
             placeholder="Your email"
             placeholderTextColor="#888"
-            value={emailText}
-            onChangeText={setEmailText}
+            value={email}
+            onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
           />

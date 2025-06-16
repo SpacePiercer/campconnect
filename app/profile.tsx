@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {
-  const [emailText, setEmailText] = useState('');
+  const [emailText, setEmail] = useState('');
   const [lowerText, setLowerText] = useState('');
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -24,7 +24,7 @@ export default function ProfileScreen() {
     try {
       const storedEmail = await AsyncStorage.getItem('userEmail');
       const storedLower = await AsyncStorage.getItem('userLowerText');
-      if (storedEmail !== null) setEmailText(storedEmail);
+      if (storedEmail !== null) setEmail(storedEmail);
       if (storedLower !== null) setLowerText(storedLower);
     } catch (error) {
       Alert.alert('Error', 'Failed to load profile data.');
@@ -63,7 +63,7 @@ export default function ProfileScreen() {
       <TextInput
         style={styles.input}
         value={emailText}
-        onChangeText={setEmailText}
+        onChangeText={setEmail}
         editable={isEditing}
         keyboardType="email-address"
         autoCapitalize="none"
