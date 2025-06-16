@@ -39,11 +39,11 @@ export default function OverviewTab() {
         Alert.alert('Full', 'No spots left in this hike.');
         return;
       }
-      const email = await AsyncStorage.getItem('userEmail');
-    if (!email) {
-      return Alert.alert('Error', 'Could not read your email.');
+      const userId = await AsyncStorage.getItem('userId');   // ✅
+    if (!userId) {
+      return Alert.alert('Not signed in', 'Please log in to join this hike.');
     }
-    updateHike({ joinedUsers: [...hike.joinedUsers, email] });
+    updateHike({ joinedUsers: [...hike.joinedUsers, userId] });
     }
   };
 
