@@ -1,6 +1,14 @@
 // app/(context)/HikeContext.tsx
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  ReactElement,
+} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Define the shape of a single hike
 export interface Hike {
   id: string;
   hikeName: string;
@@ -13,7 +21,7 @@ export interface Hike {
   carNeeded: boolean;
   joinedUsers: string[];
   completedBy: string[];
-  provisions: {id: string; owner: string; name: string; type: 'consumable' | 'tool';}[];
+  provisions: { id: string; owner: string; name: string; type: 'consumable' | 'tool' }[];
   drivers: { id: string; capacity: number; riders: string[] }[];
   media: { id: string; uri: string; access: 'public' | 'members' }[];
   distanceKm?: number;
@@ -22,37 +30,54 @@ export interface Hike {
   difficulty?: 'Easy' | 'Moderate' | 'Hard';
 }
 
-
-type HikeContextType = {
+interface HikeContextType {
   hike: Hike | null;
-  setHike: (hike: Hike) => void;
-  updateHike: (updated: Partial<Hike>) => void;
-};
+  loadHike: (id: string) => Promise<void>; // ✅ Added to the type
+  updateHike: (data: Partial<Hike>) => Promise<void>;
+}
 
 const HikeContext = createContext<HikeContextType | undefined>(undefined);
 
-export default function HikeProvider({ children }: { children: ReactNode }) {
-  const [hike, setHikeState] = useState<Hike | null>(null);
+export function useHike(): HikeContextType {
+  const ctx = useContext(HikeContext);
+  if (!ctx) {
+    throw new Error('useHike must be used within a HikeProvider');
+  }
+  return ctx;
+}
 
-  const setHike = (newHike: Hike) => {
-    setHikeState(newHike);
+export default function HikeProvider({ children }: { children: ReactNode }): ReactElement {
+  const [hike, setHike] = useState<Hike | null>(null);
+
+  const loadHike = async (id: string) => {
+    try {
+      const raw = await AsyncStorage.getItem('hikes');
+      const list: Hike[] = raw ? JSON.parse(raw) : [];
+      const found = list.find(item => item.id === id) || null;
+      setHike(found);
+    } catch (err) {
+      console.error('Error loading hike:', err);
+      setHike(null);
+    }
   };
 
-  const updateHike = (updated: Partial<Hike>) => {
-    setHikeState((prev) => (prev ? { ...prev, ...updated } : prev));
+  const updateHike = async (data: Partial<Hike>) => {
+    if (!hike) return;
+    const updated = { ...hike, ...data };
+    setHike(updated);
+    try {
+      const raw = await AsyncStorage.getItem('hikes');
+      const list: Hike[] = raw ? JSON.parse(raw) : [];
+      const newList = list.map(item => (item.id === updated.id ? updated : item));
+      await AsyncStorage.setItem('hikes', JSON.stringify(newList));
+    } catch (err) {
+      console.error('Error updating hike list:', err);
+    }
   };
 
   return (
-    <HikeContext.Provider value={{ hike, setHike, updateHike }}>
+    <HikeContext.Provider value={{ hike, loadHike, updateHike }}>
       {children}
     </HikeContext.Provider>
   );
-}
-
-export function useHike() {
-  const context = useContext(HikeContext);
-  if (!context) {
-    throw new Error('useHike must be used within a HikeProvider');
-  }
-  return context;
 }
