@@ -2,27 +2,47 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 
 export default function SignUpScreen() {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleSignUp = async () => {
-    try {
-      await auth().createUserWithEmailAndPassword(email, password);
-      router.replace('/');
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
+  try {
+    const result = await auth().createUserWithEmailAndPassword(email, password);
+    const user = result.user;
+
+    await user.updateProfile({ displayName: username });
+
+    await AsyncStorage.multiSet([
+      ['userId', user.uid],
+      ['userToken', await user.getIdToken()],
+      ['userEmail', user.email ?? ''],
+      ['username', username],
+    ]);
+
+    router.replace('/');
+  } catch (err: any) {
+    setError(err.message);
+  }
+};
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
       {error && <Text style={styles.error}>{error}</Text>}
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        placeholderTextColor="#888"
+        value={username}
+        onChangeText={setUsername}
+      />
       <TextInput
         style={styles.input}
         placeholder="Email"

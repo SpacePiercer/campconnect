@@ -66,9 +66,9 @@ export default function ParticipantsTab() {
 
   // Join handler remains unchanged
   const handleJoin = async (blockId: string) => {
-    const email = await AsyncStorage.getItem('userEmail');
-    if (!email) {
-      return Alert.alert('Error', 'Could not read your email.');
+    const userId = await AsyncStorage.getItem('userId');   // ✅
+    if (!userId) {
+      return Alert.alert('Not signed in', 'Please log in to join this hike.');
     }
 
     if (hike.drivers && hike.drivers.length > 0) {
