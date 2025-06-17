@@ -1,18 +1,27 @@
 // app/(context)/HikeContext.tsx
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-type Hike = {
+export interface Hike {
   id: string;
-  title: string;
+  hikeName: string;
+  locationName: string;
+  latitude: number | null;
+  longitude: number | null;
   date: string;
-  location: { latitude: number; longitude: number };
-  participants: string[];
-  provisions: { owner: string; name: string; type: 'consumable' | 'tool' }[];
-  carpool: {
-    drivers: { id: string; capacity: number; riders: string[] }[];
-    items: { owner: string; name: string; type: 'consumable' | 'tool' }[];
-  } | null;
-};
+  time: string;
+  participants: string;
+  carNeeded: boolean;
+  joinedUsers: string[];
+  completedBy: string[];
+  provisions: {id: string; owner: string; name: string; type: 'consumable' | 'tool';}[];
+  drivers: { id: string; capacity: number; riders: string[] }[];
+  media: { id: string; uri: string; access: 'public' | 'members' }[];
+  distanceKm?: number;
+  durationHours?: number;
+  elevationGainM?: number;
+  difficulty?: 'Easy' | 'Moderate' | 'Hard';
+}
+
 
 type HikeContextType = {
   hike: Hike | null;

@@ -2,6 +2,22 @@
 import { auth, db } from '@/firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export async function persistAuth({
+  uid,
+  token,
+  username
+}: {
+  uid: string;
+  token: string;
+  username?: string;
+}) {
+  await AsyncStorage.multiSet([
+    ['userToken', token],
+    ['userId', uid],
+    ['username', username ?? ''],
+  ]);
+}
+
 export interface SignUpResult {
   uid: string;
   email: string;
