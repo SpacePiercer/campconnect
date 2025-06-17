@@ -66,23 +66,27 @@ export default function ParticipantsTab() {
 
   // Join handler remains unchanged
   const handleJoin = async (blockId: string) => {
-    const userId = await AsyncStorage.getItem('userId');   // ✅
-    if (!userId) {
-      return Alert.alert('Not signed in', 'Please log in to join this hike.');
-    }
+  const userId = await AsyncStorage.getItem('userId'); // ✅ use UID
+  if (!userId) {
+    return Alert.alert('Not signed in', 'Please log in to join this hike.');
+  }
 
-    if (hike.drivers && hike.drivers.length > 0) {
-      const updatedDrivers = hike.drivers.map(d =>
-        d.id === blockId
-          ? { ...d, riders: [...d.riders, email] }
-          : d
-      );
-      await updateHike({ drivers: updatedDrivers });
-    } else {
-      if (hike.joinedUsers.includes(email)) return;
-      await updateHike({ joinedUsers: [...hike.joinedUsers, email] });
-    }
-  };
+  if (hike.drivers && hike.drivers.length > 0) {
+    const alreadyIn = hike.drivers.some(d => d.riders.includes(userId));
+    if (alreadyIn) return; // prevent double joining
+
+    const updatedDrivers = hike.drivers.map(d =>
+      d.id === blockId
+        ? { ...d, riders: [...d.riders, userId] }
+        : d
+    );
+    await updateHike({ drivers: updatedDrivers });
+  } else {
+    if (hike.joinedUsers.includes(userId)) return;
+    await updateHike({ joinedUsers: [...hike.joinedUsers, userId] });
+  }
+};
+
 
   return (
     <ScrollView
