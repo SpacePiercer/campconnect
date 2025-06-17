@@ -1,35 +1,18 @@
 // app/hike/[id].tsx
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
-import { useRouter, useSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import MapView, { Marker } from 'react-native-maps';
 import { useHike } from '../(context)/HikeContext';
 import HikeTabView from '../../components/HikeTabView';
 
 export default function HikeDetailScreen() {
-  const { hike, setHike } = useHike();
-  const params = useSearchParams();
-  const router = useRouter();
+  const { hike, loadHike } = useHike();
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   useEffect(() => {
-    const fetchHike = async () => {
-      // Placeholder: fetch hike from backend using params.id
-      const fetched = {
-        id: params.id as string,
-        title: 'Sample Hike',
-        date: '2025-06-15',
-        location: { latitude: 49.2827, longitude: -123.1207 },
-        participants: ['Alice', 'Bob'],
-        provisions: [],
-        carpool: null,
-      };
-      setHike(fetched);
-    };
-
-    if (params.id) {
-      fetchHike();
-    }
-  }, [params.id]);
+    if (id) loadHike(id);
+  }, [id]);
 
   if (!hike) {
     return (
