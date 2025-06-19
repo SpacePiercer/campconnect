@@ -1,9 +1,12 @@
-import { initializeApp } from 'firebase/app';
-// Import initializeAuth and Persistence from the main 'firebase/auth' module
-import { initializeAuth, Persistence } from 'firebase/auth';
-// Import getReactNativePersistence from the React Native specific entry point, trying with .js extension
-import { getReactNativePersistence } from 'firebase/auth/react-native.js'; // Added .js extension
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+// firebaseApp.ts
+import firebase from '@react-native-firebase/app';
+import '@react-native-firebase/auth'; // Import auth for its side effects (like enabling auth methods)
+import '@react-native-firebase/firestore'; // If you're using firestore, import it here too
+
+// For @react-native-firebase, you typically configure it natively in
+// android/app/google-services.json and ios/YourApp/Info.plist
+// So, you usually don't need a firebaseConfig object here for initialization
+// if you've set up the native files correctly.
 
 // Your Firebase configuration
 const firebaseConfig = {
@@ -15,14 +18,15 @@ const firebaseConfig = {
   appId: '1:1032655604266:web:840e3546fa13e96943d153',
 };
 
-// Initialize Firebase App
-const app = initializeApp(firebaseConfig);
+// Get the default Firebase app instance
+const app = firebase;
 
-// Initialize Firebase Auth with persistence for React Native
-// This uses ReactNativeAsyncStorage for storing authentication state.
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(ReactNativeAsyncStorage)
-});
+// Get the auth instance
+const auth = firebase.auth();
 
-// Export the app and auth instances for use in other parts of your application
+// Export the app and auth instances
 export { app, auth };
+
+// If you need to access other services, add them:
+// export const firestore = firebase.firestore();
+// export const storage = firebase.storage();
