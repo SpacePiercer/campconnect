@@ -39,7 +39,7 @@ export default function AppLayout() {
           options={{
             title: 'Home',
             tabBarIcon: ({ color }) => (
-              <HapticTab platform={Platform.OS}>
+              <HapticTab>
                 <AntDesign name="home" size={24} color={color} />
               </HapticTab>
             ),
