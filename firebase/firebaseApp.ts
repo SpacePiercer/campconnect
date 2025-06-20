@@ -1,32 +1,24 @@
 // firebaseApp.ts
+// Import directly from @react-native-firebase modules
 import firebase from '@react-native-firebase/app';
-import '@react-native-firebase/auth'; // Import auth for its side effects (like enabling auth methods)
-import '@react-native-firebase/firestore'; // If you're using firestore, import it here too
+import '@react-native-firebase/auth'; // Import for side effects (initializing auth methods)
+import '@react-native-firebase/firestore'; // Import if you're using Firestore
 
-// For @react-native-firebase, you typically configure it natively in
-// android/app/google-services.json and ios/YourApp/Info.plist
-// So, you usually don't need a firebaseConfig object here for initialization
-// if you've set up the native files correctly.
+// IMPORTANT: For @react-native-firebase, you generally do NOT need firebaseConfig here
+// if you have correctly placed google-services.json (Android) and GoogleService-Info.plist (iOS)
+// and configured native files as per the rnfirebase.io documentation.
+// The native modules will initialize Firebase using those native files.
 
-// Your Firebase configuration
-const firebaseConfig = {
-  apiKey: 'AIzaSyDRQXsz1ALUszH8daam2b1Ku23w23GXybo', // Reminder: Be careful with API keys in client-side code.
-  authDomain: 'camp-connect-2df6c.firebaseapp.com',
-  projectId: 'camp-connect-2df6c',
-  storageBucket: 'camp-connect-2df6c.appspot.com',
-  messagingSenderId: '1032655604266',
-  appId: '1:1032655604266:web:840e3546fa13e96943d153',
-};
+// Get the default Firebase app instance that was initialized natively
+const app = firebase.app(); // Use firebase.app() to get the default app
 
-// Get the default Firebase app instance
-const app = firebase;
-
-// Get the auth instance
+// Get the auth instance associated with the default app
 const auth = firebase.auth();
 
-// Export the app and auth instances
+// Export the app and auth instances for use in other parts of your application
 export { app, auth };
 
-// If you need to access other services, add them:
-// export const firestore = firebase.firestore();
-// export const storage = firebase.storage();
+// If you need firestore, export it as well:
+export const firestore = firebase.firestore();
+
+// Remove ReactNativeAsyncStorage and related persistence code as @react-native-firebase handles it natively.

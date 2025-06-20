@@ -9,10 +9,6 @@ buildscript {
     classpath('com.android.tools.build:gradle')
     classpath('com.facebook.react:react-native-gradle-plugin')
     classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
-    classpath 'com.google.gms:google-services:4.4.2' // Check Firebase docs for the latest version
-    implementation platform('com.google.firebase:firebase-bom:33.0.1') // Check Firebase docs for latest BOM version
-    implementation 'com.google.firebase:firebase-auth'
-    implementation 'com.google.firebase:firebase-firestore'
   }
 }
 
@@ -39,4 +35,3 @@ allprojects {
 
 apply plugin: "expo-root-project"
 apply plugin: "com.facebook.react.rootproject"
-apply plugin: 'com.google.gms.google-services'
