@@ -1,4 +1,4 @@
-package com.anonymous.hikeconnect
+package camp.connect
 
 import android.app.Application
 import android.content.res.Configuration

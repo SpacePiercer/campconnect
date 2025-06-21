@@ -1,4 +1,4 @@
-package com.anonymous.hikeconnect
+package camp.connect
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
