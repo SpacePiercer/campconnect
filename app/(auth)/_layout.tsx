@@ -1,6 +1,6 @@
 // app/(auth)/_layout.tsx
 import React from 'react';
-import { Stack } from 'expo-router';
+import { Stack } from 'expo-router'; // Make sure Text is not imported or used incorrectly here.
 
 export default function AuthLayout() {
   return (
@@ -10,4 +10,3 @@ export default function AuthLayout() {
     </Stack>
   );
 }
-
