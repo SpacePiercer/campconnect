@@ -1,6 +1,6 @@
 // app/(auth)/login.tsx
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native'; // Import Pressable
 import { useRouter } from 'expo-router';
 import auth from '@react-native-firebase/auth';
 
@@ -17,6 +17,10 @@ export default function LoginScreen() {
     } catch (err: any) {
       setError(err.message);
     }
+  };
+
+  const goToSignUp = () => {
+    router.push('/(auth)/signup'); // Navigate to the signup screen
   };
 
   return (
@@ -40,7 +44,15 @@ export default function LoginScreen() {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Sign In" onPress={handleLogin} />
+      <View style={styles.buttonSpacing}>
+        <Button title="Sign In" onPress={handleLogin} color="#4ade80" />
+      </View>
+      <View style={styles.signUpContainer}>
+        <Text style={styles.signUpText}>Don't have an account? </Text>
+        <Pressable onPress={goToSignUp}>
+          <Text style={styles.signUpLink}>Sign Up</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -69,5 +81,22 @@ const styles = StyleSheet.create({
     color: 'red',
     marginBottom: 12,
     textAlign: 'center',
+  },
+  buttonSpacing: {
+    marginBottom: 20,
+  },
+  signUpContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  signUpText: {
+    color: '#ccc',
+    fontSize: 16,
+  },
+  signUpLink: {
+    color: '#4ade80',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
