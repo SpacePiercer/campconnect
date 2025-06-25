@@ -1,3 +1,4 @@
+// app/create-hike.tsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Switch, Button, StyleSheet, ScrollView, Alert, Platform, Modal, Pressable, Animated, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -7,7 +8,10 @@ import MapView, { Marker, MapPressEvent } from 'react-native-maps';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { v4 as uuidv4 } from 'uuid';
 
-const id = uuidv4();
+// Import the useAuth hook from your root _layout.tsx
+import { useAuth } from '@/app/_layout'; // Adjust path if _layout.tsx is not directly in 'app/'
+
+const id = uuidv4(); // Note: This will generate a new ID every time the component renders, which might not be what you want for a default ID. Better to generate inside handleSubmit.
 
 type Hike = {
   id: string;
@@ -31,10 +35,11 @@ type Hike = {
 };
 
 export default function CreateHikeScreen() {
+  const router = useRouter();
+  const user = useAuth(); // Get the current authenticated user
 
-  const router = useRouter(); 
   const [hikes, setHikes] = useState<Hike[]>([]);
-  const [userId, setUserId] = useState<string | null>(null);
+  // const [userId, setUserId] = useState<string | null>(null); // userId can be derived from 'user' now
 
   const [hikeName, setHikeName] = useState('');
   const [locationName, setLocationName] = useState('');
@@ -50,10 +55,12 @@ export default function CreateHikeScreen() {
   const [difficulty, setDifficulty] = useState<'Easy'|'Moderate'|'Hard'>('Moderate');
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [loadingAuth, setLoadingAuth] = useState(true);
-  const [isAuthed, setIsAuthed] = useState(false);
 
-  
+  // Remove these authentication-related states and useEffects from here:
+  // const [loadingAuth, setLoadingAuth] = useState(true);
+  // const [isAuthed, setIsAuthed] = useState(false);
+  // useEffect for AsyncStorage.getItem('userToken') Alert
+  // useEffect for AsyncStorage.getItem('userToken') setIsAuthed
 
   useEffect(() => {
     const loadHikes = async () => {
@@ -69,24 +76,25 @@ export default function CreateHikeScreen() {
     loadHikes();
   }, []);
 
-  useEffect(() => {
-    AsyncStorage.getItem('userToken')
-      .then(token => {
-        if (!token) {
-          Alert.alert(
-            'Not signed in',
-            'You need to log in before creating a hike.',
-            [{ text: 'Go to Login', onPress: () => router.replace('/login') }]
-          );
-        }
-      });
-  }, []);
+  // If user is not logged in, the _layout.tsx will redirect them.
+  // If they somehow land here without user, display a loading/redirecting message.
+  if (user === undefined) { // 'undefined' means still checking auth state
+     return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4ade80" />
+        <Text style={styles.loadingText}>Checking authentication...</Text>
+      </View>
+    );
+  }
 
-  useEffect(() => {
-    AsyncStorage.getItem('userToken')
-      .then(token => { setIsAuthed(!!token); })
-      .finally(() => setLoadingAuth(false));
-  }, []);
+  if (user === null) { // 'null' means not authenticated, _layout.tsx should handle redirect
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Redirecting to login...</Text>
+      </View>
+    );
+  }
+
 
   const showDatePicker = () => {
     DateTimePickerAndroid.open({
@@ -102,14 +110,14 @@ export default function CreateHikeScreen() {
     });
   };
 
-  if (loadingAuth) {
-    return <ActivityIndicator />;
-  }
-  if (!isAuthed) {
-    return null; // or a placeholder; the Alert above will have navigated away
-  }
-
   const handleSubmit = async () => {
+    // Ensure user is still valid before submitting
+    if (!user) {
+      Alert.alert('Not signed in', 'You must be logged in to create a hike.');
+      router.replace('/(auth)/login');
+      return;
+    }
+
     const existing = await AsyncStorage.getItem('hikes');
     const list: Hike[] = existing ? JSON.parse(existing) : [];
 
@@ -132,7 +140,9 @@ export default function CreateHikeScreen() {
       durationHours: parseFloat(duration) || undefined,
       elevationGainM: parseInt(elevationGain, 10) || undefined,
       difficulty,
-    };  
+      // You might want to add a 'creatorId' to the hike object
+      // creatorId: user.uid,
+    };
 
     if (!hikeName || !date) {
       const msg = 'Please fill out Hike Name and Date.';
@@ -241,11 +251,11 @@ export default function CreateHikeScreen() {
   };
 
   return (
-    <ScrollView 
-  contentContainerStyle={styles.container}
-  showsVerticalScrollIndicator={false}  // hide scrollbar for clean look
-  bounces={false}                       // prevent bounce effect on iOS
->
+    <ScrollView
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={false}
+      bounces={false}
+    >
       <Text style={styles.label}>🏔️ Hike Name</Text>
       <TextInput
         style={styles.input}
@@ -336,7 +346,6 @@ export default function CreateHikeScreen() {
       />
 
       <Text style={styles.label}>⚡ Difficulty</Text>
-      {/* could be a Picker or segmented control */}
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={difficulty}
@@ -411,11 +420,11 @@ export default function CreateHikeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,        // <-- THIS makes it fill only what's needed
-    justifyContent: 'flex-start', // start from top
+    flexGrow: 1,
+    justifyContent: 'flex-start',
     padding: 20,
     backgroundColor: '#000',
-  },  
+  },
   label: {
     fontSize: 16,
     marginBottom: 4,
@@ -439,16 +448,25 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   pickerContainer: {
-  backgroundColor: '#222',  // dark grey shell behind the native picker
-  borderRadius: 6,          // match your input corners
-  marginBottom: 20,         // give it breathing room
-},
-picker: {
-  height: 50,               // tall enough to tap easily
-  color: '#fff',            // make the selected text white
-},
-pickerItem: {
-  color: '#fff',            // ensure dropdown options render in white
-},
+    backgroundColor: '#222',
+    borderRadius: 6,
+    marginBottom: 20,
+  },
+  picker: {
+    height: 50,
+    color: '#fff',
+  },
+  pickerItem: {
+    color: '#fff',
+  },
+  loadingContainer: { // Added for loading state
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
+  },
+  loadingText: { // Added for loading state
+    color: '#fff',
+    marginTop: 10,
+  },
 });
-
