@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+@theme {
+  --color-pine-50: #f2f7f3;
+  --color-pine-100: #e0ede3;
+  --color-pine-200: #c2dbc9;
+  --color-pine-300: #97c0a4;
+  --color-pine-400: #689f7b;
+  --color-pine-500: #47825d;
+  --color-pine-600: #346849;
+  --color-pine-700: #2a533c;
+  --color-pine-800: #234331;
+  --color-pine-900: #1d3729;
+  --color-cream: #faf7f0;
+  --color-sand: #f0e9dc;
+  --color-bark: #6b5b4a;
+  --color-clay: #c96f4a;
+}
+
+html {
+  background: var(--color-cream);
+}
+
+body {
+  @apply text-pine-900 antialiased;
+  font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@layer components {
+  .input {
+    @apply w-full rounded-xl border border-sand bg-cream px-4 py-3 text-base outline-none focus:border-pine-400;
+  }
+  .btn-primary {
+    @apply rounded-xl bg-pine-600 text-white font-semibold py-3 px-5 active:bg-pine-700 disabled:opacity-50;
+  }
+  .btn-secondary {
+    @apply rounded-xl bg-sand text-bark font-semibold py-3 px-5 active:bg-pine-100;
+  }
+  .card {
+    @apply bg-white rounded-2xl border border-sand shadow-sm;
+  }
+}
