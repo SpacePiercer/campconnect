@@ -24,7 +24,8 @@ export function useHub(hikeId: string): HubData {
 
   const reload = useCallback(async () => {
     const [h, p, c, r, i] = await Promise.all([
-      supabase.from('hikes').select('*, host:profiles(*)').eq('id', hikeId).maybeSingle(),
+      // profiles is reachable via host_id AND via hike_participants — must name the FK
+      supabase.from('hikes').select('*, host:profiles!hikes_host_id_fkey(*)').eq('id', hikeId).maybeSingle(),
       supabase.from('hike_participants').select('*, profile:profiles(*)').eq('hike_id', hikeId).order('joined_at'),
       supabase.from('cars').select('*').eq('hike_id', hikeId),
       supabase.from('car_riders').select('*'),
