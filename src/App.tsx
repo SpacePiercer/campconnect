@@ -24,6 +24,7 @@ function Shell() {
         <Route path="/" element={<ExplorePage />} />
         <Route path="/mine" element={<MyHikesPage />} />
         <Route path="/create" element={<CreateHikePage />} />
+        <Route path="/edit/:id" element={<CreateHikePage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/hike/:id" element={<HubPage />} />
       </Routes>
