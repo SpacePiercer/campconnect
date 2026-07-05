@@ -1,32 +1,23 @@
-# React + TypeScript + Vite
+# TrailMates 🏕️
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Mobile-first PWA for organizing group hikes and camping trips. Every trip gets a shared **Hub** answering: who's coming, who drives whom, and who brings what.
 
-Currently, two official plugins are available:
+**Stack:** Vite + React + TypeScript · Tailwind CSS · Supabase (auth, Postgres, Realtime) · Leaflet/OpenStreetMap.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Setup
 
-## React Compiler
+1. Create a [Supabase](https://supabase.com) project (free tier).
+2. In the SQL Editor, run the entire contents of `supabase/migration.sql` once.
+3. Recommended: Authentication → Sign In / Providers → Email → turn **off** "Confirm email".
+4. Copy `.env.example` to `.env` and fill in your project URL and anon key (Project Settings → API).
+5. `npm install`, then `npm run dev`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tests
 
-## Expanding the Oxlint configuration
+`bash tests/db-smoke.sh` — 15 spec-driven checks (capacity limits, RLS, cascades) run against the live database via REST. Requires the `.env` to point at a project with the migration applied; creates and cleans up its own test data.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Deploy (Netlify or Vercel free tier)
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+Build command `npm run build`, output directory `dist`. SPA rewrites are already configured (`public/_redirects` for Netlify, `vercel.json` for Vercel).
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Set the two environment variables in the site settings — `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` — then deploy. Open the site on a phone and use "Add to Home Screen" to install it as an app.
