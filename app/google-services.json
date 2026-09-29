@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1032655604266",
+    "project_id": "camp-connect-2df6c",
+    "storage_bucket": "camp-connect-2df6c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1032655604266:android:4c2f6793e096786543d153",
+        "android_client_info": {
+          "package_name": "camp.connect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBo_lFQSCuxf-mTJiCuWa1ZsEhsb3hDhe8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
