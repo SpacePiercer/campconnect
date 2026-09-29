@@ -36,3 +36,10 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# secrets / local config
+.env
+google-services.json
+GoogleService-Info.plist
+.idea/
+desktop.ini
