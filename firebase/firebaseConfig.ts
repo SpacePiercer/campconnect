@@ -1,9 +1,10 @@
 // firebase/firebaseConfig.ts
+// Values come from .env (see .env.example) -- never commit real keys.
 export const firebaseConfig = {
-  apiKey: 'REMOVED_GOOGLE_API_KEY',
-  authDomain: 'camp-connect-2df6c.firebaseapp.com',
-  projectId: 'camp-connect-2df6c',
-  storageBucket: 'camp-connect-2df6c.appspot.com',
-  messagingSenderId: '1032655604266',
-  appId: 'REMOVED_APP_ID',
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
 };

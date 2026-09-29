@@ -1,50 +1,56 @@
-# Welcome to your Expo app 👋
+# CampConnect
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile app for organising group hikes and camping trips: create a hike, invite
+people, and sort out who drives whom and who brings what, all in one place
+instead of a chaotic group chat.
 
-## Get started
+## The idea
 
-1. Install dependencies
+Group trips break down on logistics, not on the trail. Somebody has to track who
+is coming, which cars have free seats, and whether anyone remembered the stove.
+CampConnect gives every hike its own hub:
 
-   ```bash
-   npm install
-   ```
+- **Overview** — date, time, location, distance, elevation gain, difficulty and estimated duration
+- **Participants** — who has joined
+- **Carpool** — who drives and who needs a seat
+- **Provisions** — a shared list of consumables (food, water) and tools (stove,
+  tent) so nothing gets forgotten or doubled
 
-2. Start the app
+## Current state
 
-   ```bash
-    npx expo start
-   ```
+Prototype (Feb–Jun 2025), built with Expo / React Native and Firebase.
 
-In the output, you'll find options to open the app in a
+- Email sign-up and login (Firebase Auth), hikes stored in Firestore
+- Create a hike with its full trail details and carpool needs
+- Explore and join hikes, see your upcoming and completed hikes on the home tab
+- Per-hike view with Overview / Participants / Carpool / Provisions tabs
+- Map tab, profile screen, Android build
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+**Known issues:** the app mixes the web `firebase` SDK with `@react-native-firebase`,
+and the two conflict at runtime. Login is fragile, and parts of the state still live
+in AsyncStorage instead of the database. Development paused here.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Ideal state
 
-## Get a fresh project
+A rebuild (working title **TrailMates**) as a mobile-first **PWA**
+(Vite + React + TypeScript + Tailwind, Supabase for auth / Postgres / realtime,
+Leaflet + OpenStreetMap for maps):
 
-When you're ready, run:
+- **V1:** accounts, create/join hikes, and a live trip hub with carpool car blocks
+  and shared provisions/tools pools that update in realtime for everyone
+- **Later:** a grid-style inventory for packing car cargo, photo/media sharing after
+  the trip, and integrations with Strava / AllTrails, plus Telegram for inviting a
+  whole group chat into a hike in one step
+
+## Running it
 
 ```bash
-npm run reset-project
+npm install
+cp .env.example .env        # fill in your own Firebase web-app config
+# Android: put your own google-services.json in android/app/ (never committed)
+npx expo run:android        # or: npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Tech
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Expo (React Native) · Expo Router · TypeScript · Firebase Auth + Firestore · AsyncStorage
