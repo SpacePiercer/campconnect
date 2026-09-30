@@ -34,7 +34,7 @@ export default function AuthPage() {
     <div className="min-h-svh flex flex-col justify-center px-6 max-w-md mx-auto">
       <div className="text-center mb-8">
         <div className="text-5xl mb-2">🏕️</div>
-        <h1 className="text-3xl font-extrabold text-pine-700">TrailMates</h1>
+        <h1 className="text-3xl font-extrabold text-pine-700">CampConnect</h1>
         <p className="text-bark mt-1">Organize hikes together</p>
       </div>
 

@@ -1,6 +1,6 @@
 {
-  "name": "TrailMates",
-  "short_name": "TrailMates",
+  "name": "CampConnect",
+  "short_name": "CampConnect",
   "description": "Organize group hikes and camping trips together",
   "start_url": "/",
   "display": "standalone",

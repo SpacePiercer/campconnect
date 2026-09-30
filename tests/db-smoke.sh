@@ -1,8 +1,8 @@
 #!/bin/bash
-# End-to-end smoke test of TrailMates DB logic via Supabase REST (spec-driven, not code-driven)
+# End-to-end smoke test of CampConnect DB logic via Supabase REST (spec-driven, not code-driven)
 set -u
-URL=https://yuuopeubrkvawoubkjgm.supabase.co
-KEY=$(grep ANON "/c/Users/Georgii/OneDrive/Desktop/TrailMates/.env" | cut -d= -f2)
+URL=$(grep URL "$(dirname "$0")/../.env" | cut -d= -f2)
+KEY=$(grep ANON "$(dirname "$0")/../.env" | cut -d= -f2)
 PASS=test123456
 j() { python -c "import sys,json;d=json.load(sys.stdin);print(d$1)" 2>/dev/null; }
 
@@ -28,9 +28,9 @@ check() { # name expected actual
   if [ "$2" = "$3" ]; then echo "PASS: $1"; else echo "FAIL: $1 (expected [$2] got [$3])"; fi
 }
 
-T1=$(token trailmates.test1@example.com "Test One")
-T2=$(token trailmates.test2@example.com "Test Two")
-T3=$(token trailmates.test3@example.com "Test Three")
+T1=$(token campconnect.test1@example.com "Test One")
+T2=$(token campconnect.test2@example.com "Test Two")
+T3=$(token campconnect.test3@example.com "Test Three")
 
 # --- hike with capacity 2, hosted by user1 ---
 HIKE=$(api "$T1" POST /rest/v1/hikes '{"host_id":"'$(api "$T1" GET "/rest/v1/profiles?select=id&display_name=eq.Test%20One" | j "[0]['id']")'","name":"Smoke Hike","description":"d","location_name":"Testwald","lat":47.0,"lng":8.0,"date":"2027-01-01","time":"09:00","capacity":2,"carpool_enabled":true}' | j "[0]['id']")

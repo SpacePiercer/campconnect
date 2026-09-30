@@ -1,8 +1,39 @@
-# TrailMates 🏕️
+# CampConnect 🏕️
 
 Mobile-first PWA for organizing group hikes and camping trips. Every trip gets a shared **Hub** answering: who's coming, who drives whom, and who brings what.
 
 **Stack:** Vite + React + TypeScript · Tailwind CSS · Supabase (auth, Postgres, Realtime) · Leaflet/OpenStreetMap.
+
+## The idea
+
+Group trips break down on logistics, not on the trail. Somebody has to track who is
+coming, which cars have free seats, and whether anyone remembered the stove, usually
+across a messy group chat. CampConnect gives every trip one live hub instead.
+
+## Current state
+
+V1 is feature-complete (July 2026):
+
+- Email auth and profiles
+- Create a hike with a map pin, explore and join/leave hikes, "my hikes"
+- **Hub** per hike: overview, people tab with carpool (drivers offer seats, riders claim them), realtime updates
+- **Gear** tab: shared provisions (consumables) and tools pools, plus loading gear into cars
+- Installable PWA with manifest and icons, deploy configs for Netlify and Vercel
+- Row-level security on every table, covered by a 15-check database smoke test
+
+History: the first attempt (2025, Expo / React Native + Firebase) is kept in this
+repo's git history. It stalled on a conflict between the web and native Firebase SDKs,
+which led to this rebuild as a PWA on Supabase.
+
+## Ideal state
+
+- **Grid inventory for car cargo:** every item has a footprint and every trunk a
+  size-limited grid; you pack items Tetris/Tarkov-style, and the grid itself is the capacity check
+- **Integrations:** Telegram (invite a whole group chat into a hike and pre-assign
+  roles such as driver), AllTrails (pull route, length and difficulty), Strava (link or
+  auto-complete a hike from a recorded activity)
+- Photo and media sharing after the trip, plus a distinctive sticker/reaction mechanic
+
 
 ## Setup
 

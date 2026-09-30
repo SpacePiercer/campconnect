@@ -1,4 +1,4 @@
--- TrailMates — full schema. Paste into Supabase SQL editor and run once.
+-- CampConnect — full schema. Paste into Supabase SQL editor and run once.
 
 -- ============ TABLES ============
 
